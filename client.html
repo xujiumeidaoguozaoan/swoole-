@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>swoole</title>
+
+    <style>
+        #main {
+            margin: 100px auto;
+            width: 600px;
+            height: 600px;
+            background-color: whitesmoke;
+        }
+
+        #room {
+            padding: 20px;
+            overflow-y: auto;
+            max-height: 560px;
+        }
+
+        #sub {
+            margin: auto;
+            width: 600px;
+        }
+    </style>
+</head>
+<body>
+    <div id="main">
+        <div id="room" >
+
+        </div>
+    </div>
+    <div id="sub">
+
+            <label>please input your name:</label>
+            <input type="text" name="name" id="name">
+            <br>
+            <label>please input text:</label>
+            <input type="text" name="text" id="text">
+            <button id="submit">submit</button>
+
+
+    </div>
+</body>
+<script src="https://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"></script>
+<script>
+    // 连接服务地址  理应适用127.0.0.1，但有时无法成功，则可直接使用域名或者ip地址  端口需与服务端一致
+    var wsServer = 'ws://swoole.kaiot.xyz:9502';
+    var ws = new WebSocket(wsServer);
+    ws.onopen = function (evt) {
+        document.getElementById('room').innerText = "欢迎你加入聊天室！\n";
+    };
+
+    $("#submit").click(function(){
+       var name = $("#name").val();
+       var text = $("#text").val();
+       if(name == null) name="client";
+       if(text == null) text="hello";
+       ws.send(name+" : "+text+"\n");
+    });
+
+
+    ws.onmessage = function (evt) {
+        // console.log('Retrieved data from server: ' + evt.data);
+        document.getElementById('room').innerText += evt.data;
+    };
+
+    ws.onerror = function (evt, e) {
+        console.log('Error occured: ' + evt.data);
+    };
+    ws.onclose = function (evt) {
+        console.log("Disconnected");
+    };
+</script>
+</html>
